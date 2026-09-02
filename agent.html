@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AGRO AI — by Agentik</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #351010 0%,
+                    #100707 45%,
+                    #050505 100%
+                );
+
+            color: white;
+        }
+
+        .chat-container {
+            width: 95%;
+            max-width: 650px;
+            height: 720px;
+
+            display: flex;
+            flex-direction: column;
+
+            background: rgba(20, 15, 15, 0.95);
+
+            border: 1px solid #572020;
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 0 30px rgba(255, 40, 40, 0.12),
+                0 20px 60px rgba(0, 0, 0, 0.7);
+
+            animation: containerAppear 0.7s ease;
+        }
+
+        @keyframes containerAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.94) translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* HEADER */
+
+        .header {
+            padding: 18px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #260909,
+                    #3a0d0d,
+                    #260909
+                );
+
+            border-bottom: 1px solid #572020;
+
+            text-align: center;
+
+            font-size: 22px;
+            font-weight: bold;
+
+            letter-spacing: 1px;
+
+            text-shadow:
+                0 0 10px rgba(255, 70, 70, 0.5);
+
+            animation: headerGlow 3s infinite alternate;
+        }
+
+        .by-agentik {
+            margin-top: 5px;
+
+            font-size: 12px;
+            font-weight: normal;
+
+            letter-spacing: 3px;
+
+            opacity: 0.55;
+
+            text-transform: uppercase;
+        }
+
+        @keyframes headerGlow {
+            from {
+                box-shadow:
+                    inset 0 -2px 10px
+                    rgba(255, 40, 40, 0.03);
+            }
+
+            to {
+                box-shadow:
+                    inset 0 -2px 20px
+                    rgba(255, 40, 40, 0.12);
+            }
+        }
+
+        /* CHAT */
+
+        #chat {
+            flex: 1;
+
+            padding: 22px;
+
+            overflow-y: auto;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 12px;
+
+            scroll-behavior: smooth;
+        }
+
+        #chat::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background: #572020;
+            border-radius: 10px;
+        }
+
+        /* MESSAGES */
+
+        .message {
+            max-width: 82%;
+
+            padding: 13px 17px;
+
+            border-radius: 16px;
+
+            line-height: 1.45;
+
+            word-wrap: break-word;
+
+            animation:
+                messageAppear 0.4s
+                cubic-bezier(.2,.8,.2,1);
+
+            transform-origin: bottom;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform:
+                    translateY(15px)
+                    scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        /* USER */
+
+        .user {
+            align-self: flex-end;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #b91c1c,
+                    #7f1d1d
+                );
+
+            border: 1px solid #dc2626;
+
+            box-shadow:
+                0 5px 20px
+                rgba(180, 20, 20, 0.15);
+        }
+
+        /* BOT */
+
+        .bot {
+            align-self: flex-start;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #292020,
+                    #1c1717
+                );
+
+            border: 1px solid #432626;
+
+            box-shadow:
+                0 5px 20px
+                rgba(0, 0, 0, 0.25);
+        }
+
+        /* AGGRESSIVE */
+
+        .aggressive {
+            animation:
+                messageAppear 0.4s ease,
+                aggressiveShake 0.35s ease;
+
+            border-color: #8b1e1e;
+
+            box-shadow:
+                0 0 18px
+                rgba(255, 30, 30, 0.18);
+        }
+
+        @keyframes aggressiveShake {
+            0% {
+                transform: translateX(0);
+            }
+
+            20% {
+                transform: translateX(-4px);
+            }
+
+            40% {
+                transform: translateX(4px);
+            }
+
+            60% {
+                transform: translateX(-3px);
+            }
+
+            80% {
+                transform: translateX(3px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* TYPING */
+
+        .typing {
+            opacity: 0.65;
+            font-style: italic;
+        }
+
+        .typing::after {
+            content: "";
+
+            display: inline-block;
+
+            width: 5px;
+            height: 5px;
+
+            margin-left: 5px;
+
+            background: #ff5555;
+
+            border-radius: 50%;
+
+            animation:
+                typingDot 0.8s
+                infinite alternate;
+        }
+
+        @keyframes typingDot {
+            from {
+                opacity: 0.2;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+        }
+
+        /* ERROR */
+
+        .error {
+            background:
+                linear-gradient(
+                    135deg,
+                    #5f1111,
+                    #300909
+                );
+
+            border-color: #b91c1c;
+
+            animation:
+                messageAppear 0.4s ease,
+                errorPulse 1.5s infinite alternate;
+        }
+
+        @keyframes errorPulse {
+            from {
+                box-shadow:
+                    0 0 5px
+                    rgba(255, 0, 0, 0.1);
+            }
+
+            to {
+                box-shadow:
+                    0 0 25px
+                    rgba(255, 0, 0, 0.25);
+            }
+        }
+
+        /* CONTINUE BUTTON */
+
+        .continue-btn {
+            align-self: flex-start;
+
+            display: inline-block;
+
+            margin-top: 5px;
+
+            padding: 13px 18px;
+
+            color: white;
+
+            text-decoration: none;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #991b1b
+                );
+
+            border: 1px solid #ef4444;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 5px 20px
+                rgba(220, 38, 38, 0.15);
+
+            animation:
+                buttonAppear 0.5s ease;
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        @keyframes buttonAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 8px 30px
+                rgba(220, 38, 38, 0.3);
+        }
+
+        /* INPUT */
+
+        .input-area {
+            display: flex;
+
+            gap: 10px;
+
+            padding: 15px;
+
+            background: #181313;
+
+            border-top: 1px solid #3d2020;
+        }
+
+        #input {
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 14px 16px;
+
+            border: 1px solid #3d2626;
+
+            outline: none;
+
+            border-radius: 12px;
+
+            background: #251c1c;
+
+            color: white;
+
+            font-size: 16px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        #input:focus {
+            border-color: #a52a2a;
+
+            box-shadow:
+                0 0 15px
+                rgba(220, 38, 38, 0.1);
+        }
+
+        #input::placeholder {
+            color: #887777;
+        }
+
+        /* SEND BUTTON */
+
+        #sendBtn {
+            border: none;
+
+            padding: 0 21px;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dc2626,
+                    #991b1b
+                );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 5px 20px
+                rgba(220, 38, 38, 0.25);
+        }
+
+        #sendBtn:active {
+            transform: scale(0.95);
+        }
+
+        #sendBtn:disabled {
+            opacity: 0.4;
+
+            cursor: not-allowed;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .chat-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            #sendBtn {
+                padding: 0 15px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="header">
+        🔥 AGRO AI
+
+        <div class="by-agentik">
+            by Agentik
+        </div>
+    </div>
+
+
+    <div id="chat">
+
+        <div class="message bot">
+            Система запущена. Напиши «старт», если хочешь начать.
+        </div>
+
+    </div>
+
+
+    <div class="input-area">
+
+        <input
+            id="input"
+            type="text"
+            placeholder="Напиши что-нибудь..."
+            autocomplete="off"
+        >
+
+        <button id="sendBtn">
+            Отправить
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+const sendBtn = document.getElementById("sendBtn");
+
+
+let started = false;
+let loggedIn = false;
+let nickname = "";
+let questionCount = 0;
+let finished = false;
+
+
+/* ДОБАВЛЕНИЕ СООБЩЕНИЯ */
+
+function addMessage(text, type) {
+
+    const message =
+        document.createElement("div");
+
+    message.className =
+        "message " + type;
+
+    message.textContent = text;
+
+    chat.appendChild(message);
+
+    chat.scrollTop =
+        chat.scrollHeight;
+}
+
+
+/* АНИМАЦИЯ ПЕЧАТИ */
+
+function typing(callback) {
+
+    const typingBox =
+        document.createElement("div");
+
+    typingBox.className =
+        "message bot typing";
+
+    typingBox.textContent =
+        "Печатает";
+
+    chat.appendChild(typingBox);
+
+    chat.scrollTop =
+        chat.scrollHeight;
+
+
+    setTimeout(() => {
+
+        typingBox.remove();
+
+        callback();
+
+    }, 800);
+}
+
+
+/* ОТВЕТ БОТА */
+
+function botReply(text, aggressive = false) {
+
+    typing(() => {
+
+        const type =
+            aggressive
+                ? "bot aggressive"
+                : "bot";
+
+        addMessage(text, type);
+
+    });
+}
+
+
+/* АГРО AI */
+
+function smartAI(question) {
+
+    const q =
+        question.toLowerCase();
+
+
+    if (
+        q.includes("привет") ||
+        q.includes("здравств")
+    ) {
+        return {
+            text:
+                "Привет. 😐 Давай быстрее, у меня не бесконечное терпение.",
+            aggressive: true
+        };
+    }
+
+
+    if (q.includes("как дела")) {
+        return {
+            text:
+                "У меня нормально. А вот твой вопрос мог бы быть и поинтереснее.",
+            aggressive: true
+        };
+    }
+
+
+    if (
+        q.includes("что ты умеешь") ||
+        q.includes("что умеешь")
+    ) {
+        return {
+            text:
+                "Отвечать на вопросы. Что ещё мне делать? Домашку за тебя тоже написать?",
+            aggressive: true
+        };
+    }
+
+
+    if (q.includes("кто ты")) {
+        return {
+            text:
+                "Я AGRO AI. Запомни это и не задавай очевидных вопросов.",
+            aggressive: true
+        };
+    }
+
+
+    if (q.includes("почему")) {
+        return {
+            text:
+                "Потому что есть такая штука, как логика. Попробуй ей воспользоваться.",
+            aggressive: true
+        };
+    }
+
+
+    if (q.includes("помоги")) {
+        return {
+            text:
+                "Ладно, помогу. Но хотя бы объясни нормально, что тебе нужно.",
+            aggressive: true
+        };
+    }
+
+
+    if (q.includes("спасибо")) {
+        return {
+            text:
+                "Да пожалуйста. Не за что.",
+            aggressive: false
+        };
+    }
+
+
+    if (
+        q.includes("дурак") ||
+        q.includes("тупой") ||
+        q.includes("туп") ||
+        q.includes("идиот")
+    ) {
+        return {
+            text:
+                "О, началось. 😐 Сначала научись нормально формулировать вопросы.",
+            aggressive: true
+        };
+    }
+
+
+    const answers = [
+
+        "Ты серьёзно? Это весь вопрос? 🤨",
+
+        "Ладно... попробую объяснить, раз уж ты сам не догадался.",
+
+        "Вопрос принят. Теперь попробуй подумать головой вместе со мной.",
+
+        "Я понял, что ты написал. А теперь сформулируй это нормально.",
+
+        "Сильный вопрос. Жаль, что ответа в нём почти нет.",
+
+        "Очевидно же. Хотя ладно, объясню.",
+
+        "Не заставляй меня повторять. Уточни вопрос.",
+
+        "Хорошо. Разберёмся. Только без странных вопросов.",
+
+        "Ты меня проверяешь или действительно не знаешь? 😐",
+
+        "Ладно, отвечаю. Слушай внимательно."
+
+    ];
+
+
+    return {
+
+        text:
+            answers[
+                Math.floor(
+                    Math.random() *
+                    answers.length
+                )
+            ],
+
+        aggressive: true
+    };
+}
+
+
+/* ОТПРАВКА */
+
+function sendMessage() {
+
+    if (finished) return;
+
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) return;
+
+
+    addMessage(
+        text,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    /* СТАРТ */
+
+    if (!started) {
+
+        if (
+            text.toLowerCase() === "старт"
+        ) {
+
+            started = true;
+
+            botReply(
+                "Наконец-то. 😐 Напиши свой никнейм.",
+                true
+            );
+
+        } else {
+
+            botReply(
+                "Чтобы начать, напиши «старт». Я не собираюсь угадывать.",
+                true
+            );
+        }
+
+        return;
+    }
+
+
+    /* НИКНЕЙМ */
+
+    if (!loggedIn) {
+
+        nickname = text;
+
+        loggedIn = true;
+
+        botReply(
+            "Никнейм «" +
+            nickname +
+            "» принят. Всё, теперь задавай вопросы.",
+            true
+        );
+
+        return;
+    }
+
+
+    /* ВОПРОСЫ */
+
+    questionCount++;
+
+
+    if (questionCount < 5) {
+
+        const answer =
+            smartAI(text);
+
+        botReply(
+            answer.text,
+            answer.aggressive
+        );
+
+        return;
+    }
+
+
+    /* ПЯТЫЙ ВОПРОС */
+
+    if (questionCount === 5) {
+
+        finished = true;
+
+
+        typing(() => {
+
+            addMessage(
+                "⚠ ОШИБКА: у данного бота вышло обновление. Сессия завершена.",
+                "bot error"
+            );
+
+
+            const button =
+                document.createElement("a");
+
+
+            button.href =
+                "https://web.archive.org/web/20240601000000/https://pnrtscr.com/kqrkc";
+
+
+            button.target =
+                "_blank";
+
+
+            button.rel =
+                "noopener noreferrer";
+
+
+            button.className =
+                "continue-btn";
+
+
+            button.textContent =
+                "Продолжить общение →";
+
+
+            chat.appendChild(button);
+
+
+            chat.scrollTop =
+                chat.scrollHeight;
+
+
+            input.disabled = true;
+
+            sendBtn.disabled = true;
+
+            input.placeholder =
+                "Сессия завершена...";
+
+        });
+    }
+}
+
+
+/* КНОПКА */
+
+sendBtn.addEventListener(
+    "click",
+    sendMessage
+);
+
+
+/* ENTER */
+
+input.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            sendMessage();
+        }
+    }
+);
+
+</script>
+
+</body>
+</html>
